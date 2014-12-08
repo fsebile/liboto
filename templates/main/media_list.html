@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block content %}
+<table class="table table-responsive">
+    <tr>
+        <th>Thumbnail</th>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Publisher</th>
+        <th>Year</th>
+    </tr>
+    {% for media in media_list %}
+    <tr >
+        <td><img src="{{ media.cover_image }}" width="75px"/></td>
+        <td style="vertical-align:middle">{{ media.title }}</td>
+        <td style="vertical-align:middle">{{ media.author.name }}</td>
+        <td style="vertical-align:middle">{{ media.publisher.name }}</td>
+        <td style="vertical-align:middle">{{ media.year|naturalday }}</td>
+    </tr>
+    {% endfor %}
+
+</table>
+{% endblock %}
