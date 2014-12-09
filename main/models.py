@@ -34,11 +34,12 @@ class Media(models.Model):
     author = models.ForeignKey(Author)
     cover_image = models.URLField(blank=True, null=True)
     type = models.CharField(max_length=1, choices=MEDIA_CHOICES)
-    stock = models.IntegerField(default=1)
+    total_stock = models.IntegerField(default=1)
 
-    @property
     def real_stock(self):
-        return self.stock - self.user_set.objects.count()
+        return self.total_stock - self.transaction_set.filter(returned=False).count()
+    real_stock.description = 'Real Stock'
+    real_stock.allow_tags = True
 
     def __unicode__(self):
         return u"{}".format(self.title)
@@ -53,17 +54,16 @@ class Transaction(models.Model):
 
     def clean(self):
         errors = {}
-        all_not_returned = self.user.transaction_set.filter(returned=False)
+        users_books = self.user.transaction_set.filter(returned=False)
 
-        if (all_not_returned.filter(media=self.media).exists()
+        if (users_books.filter(media=self.media).exists()
            and not self.returned):
             errors.update({'media': ["User hasn't returned this book."]})
 
-        if (all_not_returned.count() > self.media.stock
-           and not self.returned):
+        if self.media.real_stock() < 1 and not self.returned:
             errors.update({'media': ["This book has no stock"]})
 
-        for media_transaction in all_not_returned:
+        for media_transaction in users_books:
             if media_transaction.is_past_due and not self.returned:
                 errors.update({'user': ["User has past due media."]})
 

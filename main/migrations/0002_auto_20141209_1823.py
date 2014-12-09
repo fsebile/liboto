@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='media',
-            name='stock',
+            name='total_stock',
             field=models.IntegerField(default=1),
             preserve_default=True,
         ),
