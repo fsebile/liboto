@@ -91,3 +91,5 @@ TEMPLATE_DIRS = (
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
 )
+
+LEND_DURATION = 14  # days

@@ -1,6 +1,11 @@
 from django.contrib import admin
-from .models import Media, Author, Publisher
+from .models import Media, Author, Publisher, Transaction
 # Register your models here.
+
+
+@admin.register(Transaction)
+class TransactionAdmin(admin.ModelAdmin):
+    pass
 
 
 @admin.register(Media)
