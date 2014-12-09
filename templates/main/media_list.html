@@ -1,6 +1,30 @@
 {% extends "base.html" %}
 {% load humanize %}
 {% block content %}
+<form method="GET" action=".">
+    <input type="text" name="isbn" id="isbn_id" placeholder="---ISBN---">
+    <input type="text" name="title" id="title_id" placeholder="---Title---">
+    <input type="text" name="year" id="year_id" placeholder="---Year---">
+    <select name="author" id="author_id">
+        <option value="" selected="selected">---Author---</option>
+        {% for author in authors %}
+            <option value="{{ author.id }}">{{ author.name }}</option>
+        {% endfor %}
+    </select>
+    <select name="publisher" id="publisher_id">
+        <option value="" selected="selected">---Publisher---</option>
+        {% for publisher in publishers %}
+            <option value="{{ publisher.id }}">{{ publisher.name }}</option>
+        {% endfor %}
+    </select>
+    <select name="type" id="type_id">
+        <option value="" selected="selected">---Type---</option>
+        {% for mt, media_type in media_types %}
+            <option value="{{ mt }}">{{ media_type }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">Show</button>
+</form>
 <table class="table table-responsive">
     <tr>
         <th>Thumbnail</th>

@@ -5,11 +5,6 @@ from django.utils import timezone
 from datetime import timedelta
 
 # Create your models here.
-MEDIA_CHOICES = [
-    ("b", "Book"),
-    ("m", "Magazine"),
-    ("n", "Newspaper"),
-]
 
 
 class Author(models.Model):
@@ -27,6 +22,12 @@ class Publisher(models.Model):
 
 
 class Media(models.Model):
+    MEDIA_CHOICES = [
+        ("b", "Book"),
+        ("m", "Magazine"),
+        ("n", "Newspaper"),
+    ]
+
     isbn = models.BigIntegerField()
     title = models.CharField(max_length=160)
     year = models.DateField()
@@ -35,6 +36,10 @@ class Media(models.Model):
     cover_image = models.URLField(blank=True, null=True)
     type = models.CharField(max_length=1, choices=MEDIA_CHOICES)
     total_stock = models.IntegerField(default=1)
+
+    @property
+    def type_verbose(self):
+        return u"{}".format(self.MEDIA_CHOICES[self.type])
 
     def real_stock(self):
         return self.total_stock - self.transaction_set.filter(returned=False).count()
