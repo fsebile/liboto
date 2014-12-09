@@ -8,6 +8,7 @@
         <th>Author</th>
         <th>Publisher</th>
         <th>Year</th>
+        <th>Status</th>
     </tr>
     {% for media in media_list %}
     <tr >
@@ -16,6 +17,7 @@
         <td style="vertical-align:middle">{{ media.author.name }}</td>
         <td style="vertical-align:middle">{{ media.publisher.name }}</td>
         <td style="vertical-align:middle">{{ media.year|naturalday }}</td>
+        <td style="vertical-align:middle">{% if media.real_stock > 0 %}In Stock{% else %}Out of Stock{% endif %}</td>
     </tr>
     {% endfor %}
 
