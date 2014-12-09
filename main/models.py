@@ -15,9 +15,15 @@ MEDIA_CHOICES = [
 class Author(models.Model):
     name = models.CharField(max_length=160)
 
+    def __unicode__(self):
+        return u"{}".format(self.name)
+
 
 class Publisher(models.Model):
     name = models.CharField(max_length=160)
+
+    def __unicode__(self):
+        return u"{}".format(self.name)
 
 
 class Media(models.Model):
@@ -66,3 +72,6 @@ class Transaction(models.Model):
     @property
     def is_past_due(self):
         return timezone.now() > self.cdate + timedelta(days=self.duration)
+
+    def __unicode__(self):
+        return u"{} - {}".format(self.media.title, self.user.username)
