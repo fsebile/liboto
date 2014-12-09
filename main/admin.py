@@ -5,19 +5,20 @@ from .models import Media, Author, Publisher, Transaction
 
 @admin.register(Transaction)
 class TransactionAdmin(admin.ModelAdmin):
-    pass
+    list_display = ["media", "user", "cdate", "returned", "duration"]
 
 
 @admin.register(Media)
 class MediaAdmin(admin.ModelAdmin):
-    pass
+    list_display = ["isbn", "title", "publisher", "author", "type",
+                    "real_stock"]
 
 
 @admin.register(Author)
 class AuthorAdmin(admin.ModelAdmin):
-    pass
+    list_display = ["name"]
 
 
 @admin.register(Publisher)
 class PublisherAdmin(admin.ModelAdmin):
-    pass
+    list_display = ["name"]
