@@ -11,31 +11,31 @@ class MediaListView(ListView):
     model = Media
     paginate_by = 3  # 25
 
+    @staticmethod
+    def get_search_parameters(request, search_params, query_params=None):
+        if query_params is None:
+            query_params = {}
+
+        qdict = {}
+
+        for param in search_params:
+            val = request.GET.get(param, None)
+            if val is not None and len(val):
+                qdict[query_params.get(param, param)] = val
+
+        return qdict
+
     def get_queryset(self):
-        isbn = self.request.GET.get("isbn", None)
-        title = self.request.GET.get("title", None)
-        year = self.request.GET.get("year", None)
-        publisher = self.request.GET.get("publisher", None)
-        author = self.request.GET.get("author", None)
-        media_type = self.request.GET.get("type", None)
-
-        query = {}
-
-        if isbn is not None and len(isbn):
-            query["isbn"] = isbn
-        if title is not None and len(title):
-            query["title__icontains"] = title
-        if year is not None and len(year):
-            query["year__year"] = year[:4]
-        if publisher is not None and len(publisher):
-            query["publisher__id"] = publisher
-        if author is not None and len(author):
-            query["author__id"] = author
-        if media_type is not None and len(media_type):
-            query["type"] = media_type
-
+        query = self.get_search_parameters(
+            request=self.request,
+            search_params=["isbn", "title", "year",
+                           "publisher", "author", "type"],
+            query_params={"isbn": "isbn__icontains",
+                          "title": "title__icontains",
+                          "year": "year__year",
+                          "publisher": "publisher__id",
+                          "author": "author__id"})
         return self.model.objects.filter(**query)
-
 
     def get_context_data(self, **kwargs):
         context = super(MediaListView, self).get_context_data(**kwargs)
