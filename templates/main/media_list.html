@@ -1,64 +1,109 @@
 {% extends "base.html" %}
 {% load humanize %}
 {% block content %}
-<form method="GET" action=".">
-    <input type="text" name="isbn" id="isbn_id" placeholder="---ISBN---">
-    <input type="text" name="title" id="title_id" placeholder="---Title---">
-    <input type="text" name="year" id="year_id" placeholder="---Year---">
-    <select name="author" id="author_id">
-        <option value="" selected="selected">---Author---</option>
-        {% for author in authors %}
-            <option value="{{ author.id }}">{{ author.name }}</option>
-        {% endfor %}
-    </select>
-    <select name="publisher" id="publisher_id">
-        <option value="" selected="selected">---Publisher---</option>
-        {% for publisher in publishers %}
-            <option value="{{ publisher.id }}">{{ publisher.name }}</option>
-        {% endfor %}
-    </select>
-    <select name="type" id="type_id">
-        <option value="" selected="selected">---Type---</option>
-        {% for mt, media_type in media_types %}
-            <option value="{{ mt }}">{{ media_type }}</option>
-        {% endfor %}
-    </select>
-    <button type="submit">Show</button>
-</form>
-<table class="table table-responsive">
-    <tr>
-        <th>Thumbnail</th>
-        <th>Title</th>
-        <th>Author</th>
-        <th>Publisher</th>
-        <th>Year</th>
-        <th>Status</th>
-        {% if not user.is_anonymous %}
-        <th>Request</th>
-        {% endif %}
-    </tr>
-    {% for media in media_list %}
-    <tr >
-        <td><img src="{{ media.cover_image }}" width="75px"/></td>
-        <td style="vertical-align:middle">{{ media.title }}</td>
-        <td style="vertical-align:middle">{{ media.author.name }}</td>
-        <td style="vertical-align:middle">{{ media.publisher.name }}</td>
-        <td style="vertical-align:middle">{{ media.year|naturalday }}</td>
-        <td style="vertical-align:middle">{% if media.real_stock > 0 %}In Stock{% else %}Out of Stock{% endif %}</td>
-        {% if not user.is_anonymous %}
-        <th style="vertical-align:middle">
-            <form action="{% url "request_media_url"%}" method="POST">{% csrf_token %}
-                {% if media.real_stock > 0 %}
-                <input type="hidden" name="media_id" value="{{ media.id }}">
-                <button class="btn btn-default btn-block" type="submit">Reserve</button>
-                {% else %}
-                <button class="btn btn-default btn-block disabled" type="button">Out of stock</button>
-                {% endif %}
-            </form>
-        </th>
-        {% endif %}
-    </tr>
-    {% endfor %}
 
-</table>
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h1>Search Media</h1>
+        </div>
+        <div class="panel-body">
+            <form method="GET" action="." role="form">
+                <div class="row">
+                    <div class="col-md-2 form-group">
+                        <input type="text" name="isbn" class="form-control"
+                               id="isbn_id" placeholder="ISBN">
+                    </div>
+                    <div class="col-md-2 form-group">
+                        <input type="text" name="title" class="form-control"
+                               id="title_id" placeholder="Title">
+                    </div>
+                    <div class="col-md-1 form-group">
+                        <input type="text" name="year" class="form-control"
+                               id="year_id" placeholder="Year">
+                    </div>
+
+                    <div class="col-md-2 form-group">
+                        <select name="author" class="form-control" id="author_id">
+                            <option value="" selected="selected">Author</option>
+                            {% for author in authors %}
+                                <option value="{{ author.id }}">{{ author.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-2 form-group">
+                        <select name="publisher" class="form-control"
+                                id="publisher_id">
+                            <option value="" selected="selected">Publisher</option>
+                            {% for publisher in publishers %}
+                                <option value="{{ publisher.id }}">{{ publisher.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-2 form-group">
+                        <select name="type" class="form-control" id="type_id">
+                            <option value="" selected="selected">Type</option>
+                            {% for mt, media_type in media_types %}
+                                <option value="{{ mt }}">{{ media_type }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-1 form-group">
+                        <button type="submit" class="btn btn-default btn-block">
+                            Show
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+            <table class="table table-responsive">
+                <tr>
+                    <th>Thumbnail</th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Publisher</th>
+                    <th>Publish Year</th>
+                    <th>Status</th>
+                    {% if not user.is_anonymous %}
+                        <th>Request</th>
+                    {% endif %}
+                </tr>
+                {% for media in media_list %}
+                    <tr>
+                        <td><img src="{{ media.cover_image }}" width="75px"/>
+                        </td>
+                        <td style="vertical-align:middle">{{ media.title }}</td>
+                        <td style="vertical-align:middle">{{ media.author.name }}</td>
+                        <td style="vertical-align:middle">{{ media.publisher.name }}</td>
+                        <td style="vertical-align:middle">{{ media.year|naturalday }}</td>
+                        <td style="vertical-align:middle">
+                            {% if media.real_stock > 0 %}In Stock{% else %}Out
+                                of Stock{% endif %}</td>
+                        {% if not user.is_anonymous %}
+                            <th style="vertical-align:middle">
+                                <form action="{% url "request_media_url" %}"
+                                      method="POST">{% csrf_token %}
+                                    {% if media.real_stock > 0 %}
+                                        <input type="hidden" name="media_id"
+                                               value="{{ media.id }}">
+                                        <button class="btn btn-default btn-block"
+                                                type="submit">Reserve
+                                        </button>
+                                    {% else %}
+                                        <button class="btn btn-default btn-block disabled"
+                                                type="button">Out of stock
+                                        </button>
+                                    {% endif %}
+                                </form>
+                            </th>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+
+            </table>
+        </div>
+    </div>
+
 {% endblock %}

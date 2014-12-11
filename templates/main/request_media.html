@@ -1,11 +1,20 @@
 {% extends "base.html" %}
 {% block content %}
-    <h1>Do you really want this {{ media.type_verbose }}?</h1>
-    <p><h4>{{ media.title }} by {{ media.author.name }}</h4></p>
-    <form action="." method="POST">
-        {% csrf_token %}
-        <input type="hidden" name="media_id" value="{{ media.id }}" >
-        <button class="btn btn-danger" name="choice" value="false">No</button>
-        <button class="btn btn-primary" name="choice" value="true">Yes</button>
-    </form>
+
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h1>Do you really want this {{ media.type_verbose }}?</h1>
+        </div>
+        <div class="panel-body">
+            <p><h4>{{ media.title }} by {{ media.author.name }}</h4></p>
+            <form action="." method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="media_id" value="{{ media.id }}" >
+                <button class="btn btn-danger" name="choice" value="false">No</button>
+                <button class="btn btn-primary" name="choice" value="true">Yes</button>
+            </form>
+        </div>
+    </div>
+
+
 {% endblock content %}
