@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 from django.views.generic.list import ListView
 from django.contrib import messages
 from django.views.generic.base import TemplateView
-from .models import Media, Author, Publisher
+from .models import Media, Author, Publisher, Transaction
 
 # Create your views here.
 
@@ -60,9 +60,22 @@ class RequestMedia(TemplateView):
     def post(self, request, *args, **kwargs):
         if "choice" in request.POST.keys():
             choice = request.POST["choice"]
-            if choice == u"true":
-                messages.add_message(request, messages.SUCCESS,
-                                     "Your book is reserved.")
+            if choice == u"true" and "media_id" in request.POST.keys():
+                media = Media.objects.filter(pk=request.POST["media_id"])
+                if media.exists():
+                    if media.first().real_stock() < 1:
+                        messages.add_message(request, messages.WARNING,
+                                         "Requested media does not have stock.")
+                    else:
+                        Transaction.objects.create(
+                            media=media.first(),
+                            user=request.user)
+                        messages.add_message(request, messages.SUCCESS,
+                                         "Your request is reserved.")
+                else:
+                    messages.add_message(request, messages.WARNING,
+                                     "Media does not exist.")
+
             elif choice == u"false":
                 messages.add_message(request, messages.INFO,
                                      "Cancelled reservation.")
