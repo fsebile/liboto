@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Do you really want this book?</h1>
+    <p><h4>{{ media.title }} by {{ media.author.name }}</h4></p>
+    <form action="." method="POST">
+        {% csrf_token %}
+        <button class="btn btn-danger" name="choice" value="false">No</button>
+        <button class="btn btn-primary" name="choice" value="true">Yes</button>
+    </form>
+{% endblock content %}

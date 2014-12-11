@@ -1,8 +1,12 @@
+from django.http.response import HttpResponseRedirect
+from django.core.urlresolvers import reverse
 from django.views.generic.list import ListView
+from django.contrib import messages
 from django.views.generic.base import TemplateView
 from .models import Media, Author, Publisher
 
 # Create your views here.
+
 
 
 class MediaListView(ListView):
@@ -47,3 +51,47 @@ class MediaListView(ListView):
 
 class Home(TemplateView):
     template_name = "main/home.html"
+
+
+class RequestMedia(TemplateView):
+    template_name = "main/request_media.html"
+    http_method_names = ["get", "post"]
+
+    def post(self, request, *args, **kwargs):
+        if "choice" in request.POST.keys():
+            choice = request.POST["choice"]
+            if choice == u"true":
+                messages.add_message(request, messages.SUCCESS,
+                                     "Your book is reserved.")
+            elif choice == u"false":
+                messages.add_message(request, messages.INFO,
+                                     "Cancelled reservation.")
+            else:
+                messages.add_message(request, messages.WARNING,
+                                     "Invalid request.")
+            return HttpResponseRedirect(redirect_to=reverse("media_list_url"))
+        else:
+            try:
+                context = self.get_context_data(**kwargs)
+                return self.render_to_response(context)
+            except IndexError as e:
+                messages.add_message(request, messages.WARNING, e.message)
+                return HttpResponseRedirect(redirect_to=reverse("home"))
+
+    def get(self, request, *args, **kwargs):  # get is forbidden
+        messages.add_message(request, messages.WARNING,
+                             "You've tried to access a forbidden page.")
+        return HttpResponseRedirect(redirect_to=reverse("home"))
+
+    def get_context_data(self, **kwargs):
+        context = super(RequestMedia, self).get_context_data(**kwargs)
+        media_id = self.request.POST.get("media_id", None)
+        if media_id is not None and len(media_id):
+            media = Media.objects.filter(pk=media_id)
+            if media.exists():
+                context["media"] = media.first()
+                return context
+            else:
+                raise IndexError("Media does not exist.")
+        else:
+            raise IndexError("Invalid Access.")

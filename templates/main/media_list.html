@@ -33,6 +33,9 @@
         <th>Publisher</th>
         <th>Year</th>
         <th>Status</th>
+        {% if not user.is_anonymous %}
+        <th>Request</th>
+        {% endif %}
     </tr>
     {% for media in media_list %}
     <tr >
@@ -42,6 +45,11 @@
         <td style="vertical-align:middle">{{ media.publisher.name }}</td>
         <td style="vertical-align:middle">{{ media.year|naturalday }}</td>
         <td style="vertical-align:middle">{% if media.real_stock > 0 %}In Stock{% else %}Out of Stock{% endif %}</td>
+        {% if not user.is_anonymous %}
+        <th style="vertical-align:middle"><form action="{% url "request_media_url"%}" method="POST">{% csrf_token %}
+            <input type="hidden" name="media_id" value="{{ media.id }}">
+            <button class="btn btn-default" type="submit">Now</button></form></th>
+        {% endif %}
     </tr>
     {% endfor %}
 
