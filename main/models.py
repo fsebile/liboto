@@ -39,7 +39,7 @@ class Media(models.Model):
 
     @property
     def type_verbose(self):
-        return u"{}".format(self.MEDIA_CHOICES[self.type])
+        return u"{}".format(dict(self.MEDIA_CHOICES)[self.type])
 
     def real_stock(self):
         return self.total_stock - self.transaction_set.filter(returned=False).count()
@@ -59,16 +59,16 @@ class Transaction(models.Model):
 
     def clean(self):
         errors = {}
-        users_books = self.user.transaction_set.filter(returned=False)
+        users_media = self.user.transaction_set.filter(returned=False)
 
-        if (users_books.filter(media=self.media).exists()
+        if (users_media.filter(media=self.media).exists()
            and not self.returned):
-            errors.update({'media': ["User hasn't returned this book."]})
+            errors.update({'media': ["User hasn't returned this {}.".format(self.media.type_verbose)]})
 
         if self.media.real_stock() < 1 and not self.returned:
-            errors.update({'media': ["This book has no stock"]})
+            errors.update({'media': ["This {} has no stock".format(self.type_verbose)]})
 
-        for media_transaction in users_books:
+        for media_transaction in users_media:
             if media_transaction.is_past_due and not self.returned:
                 errors.update({'user': ["User has past due media."]})
 

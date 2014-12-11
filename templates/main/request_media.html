@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-    <h1>Do you really want this book?</h1>
+    <h1>Do you really want this {{ media.type_verbose }}?</h1>
     <p><h4>{{ media.title }} by {{ media.author.name }}</h4></p>
     <form action="." method="POST">
         {% csrf_token %}

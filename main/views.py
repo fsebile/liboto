@@ -1,5 +1,6 @@
 from django.http.response import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.core.exceptions import ValidationError
 from django.views.generic.list import ListView
 from django.contrib import messages
 from django.views.generic.base import TemplateView
@@ -67,11 +68,20 @@ class RequestMedia(TemplateView):
                         messages.add_message(request, messages.WARNING,
                                          "Requested media does not have stock.")
                     else:
-                        Transaction.objects.create(
+                        t = Transaction(
                             media=media.first(),
                             user=request.user)
-                        messages.add_message(request, messages.SUCCESS,
-                                         "Your request is reserved.")
+                        try:
+                            t.full_clean()
+                            t.save()
+                            messages.add_message(request, messages.SUCCESS,
+                                             "Your request is reserved.")
+                        except ValidationError as e:
+                            for field in e.message_dict.values():
+                                for error in field:
+                                    messages.add_message(request,
+                                                         messages.ERROR,
+                                                         error)
                 else:
                     messages.add_message(request, messages.WARNING,
                                      "Media does not exist.")
