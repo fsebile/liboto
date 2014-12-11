@@ -1,5 +1,5 @@
-from django.shortcuts import render
 from django.views.generic.list import ListView
+from django.views.generic.base import TemplateView
 from .models import Media, Author, Publisher
 
 # Create your views here.
@@ -43,3 +43,7 @@ class MediaListView(ListView):
         context["publishers"] = Publisher.objects.all().order_by("name")
         context["media_types"] = Media.MEDIA_CHOICES
         return context
+
+
+class Home(TemplateView):
+    template_name = "main/home.html"
