@@ -78,5 +78,9 @@ class Transaction(models.Model):
     def is_past_due(self):
         return timezone.now() > self.cdate + timedelta(days=self.duration)
 
+    @property
+    def due_date(self):
+        return self.cdate + timedelta(days=self.duration)
+
     def __unicode__(self):
         return u"{} - {}".format(self.media.title, self.user.username)
