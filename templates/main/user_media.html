@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block content %}
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h1>Welcome to LiBoto</h1>
+        </div>
+        <div class="panel-body">
+            <table class="table table-responsive">
+                <tr>
+                    <th>Thumbnail</th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Publisher</th>
+                    <th>Publish Year</th>
+                    <th>Status</th>
+                </tr>
+                {% for trans in transactions %}
+                <tr >
+                    <td><img src="{{ trans.media.cover_image }}" width="75px"/></td>
+                    <td style="vertical-align:middle">{{ trans.media.title }}</td>
+                    <td style="vertical-align:middle">{{ trans.media.author.name }}</td>
+                    <td style="vertical-align:middle">{{ trans.media.publisher.name }}</td>
+                    <td style="vertical-align:middle">{{ trans.media.year|naturalday }}</td>
+                    <td style="vertical-align:middle">
+                        {% if trans.returned %}
+                        <p class="text-success">Returned</p>
+                        {% else %}
+                            {% if trans.due_date > now %}
+                                Due: {{ trans.due_date|naturalday }}
+                            {% else %}
+                                <p class="text-danger"> Past Due: {{ trans.due_date|naturalday }}</p>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+{% endblock content %}

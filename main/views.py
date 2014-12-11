@@ -5,6 +5,7 @@ from django.views.generic.list import ListView
 from django.contrib import messages
 from django.views.generic.base import TemplateView
 from .models import Media, Author, Publisher, Transaction
+from django.utils import timezone
 
 # Create your views here.
 
@@ -53,6 +54,18 @@ class MediaListView(ListView):
 class Home(TemplateView):
     template_name = "main/home.html"
 
+class UserHome(TemplateView):
+    template_name = "main/user_home.html"
+
+
+class UserMedia(TemplateView):
+    template_name = "main/user_media.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(UserMedia, self).get_context_data(**kwargs)
+        context["transactions"] = self.request.user.transaction_set.order_by("returned", "cdate")
+        context["now"] = timezone.now()
+        return context
 
 class RequestMedia(TemplateView):
     template_name = "main/request_media.html"
