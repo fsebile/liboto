@@ -39,14 +39,12 @@ class MediaListView(ListView):
             query_params={"isbn": "isbn__icontains",
                           "title": "title__icontains",
                           "year": "year__year",
-                          "publisher": "publisher__id",
-                          "author": "author__id"})
+                          "publisher": "publisher__name__icontains",
+                          "author": "author__name__icontains"})
         return self.model.objects.filter(**query)
 
     def get_context_data(self, **kwargs):
         context = super(MediaListView, self).get_context_data(**kwargs)
-        context["authors"] = Author.objects.all().order_by("name")
-        context["publishers"] = Publisher.objects.all().order_by("name")
         context["media_types"] = Media.MEDIA_CHOICES
         return context
 

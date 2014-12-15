@@ -21,26 +21,14 @@
                         <input type="text" name="year" class="form-control"
                                id="year_id" placeholder="Year">
                     </div>
-
                     <div class="col-md-2 form-group">
-                        <select name="author" class="form-control" id="author_id">
-                            <option value="" selected="selected">Author</option>
-                            {% for author in authors %}
-                                <option value="{{ author.id }}">{{ author.name }}</option>
-                            {% endfor %}
-                        </select>
+                        <input type="text" name="author" class="form-control"
+                               id="author_id" placeholder="Author">
                     </div>
-
                     <div class="col-md-2 form-group">
-                        <select name="publisher" class="form-control"
-                                id="publisher_id">
-                            <option value="" selected="selected">Publisher</option>
-                            {% for publisher in publishers %}
-                                <option value="{{ publisher.id }}">{{ publisher.name }}</option>
-                            {% endfor %}
-                        </select>
+                        <input type="text" name="publisher" class="form-control"
+                               id="publisher_id" placeholder="Publisher">
                     </div>
-
                     <div class="col-md-2 form-group">
                         <select name="type" class="form-control" id="type_id">
                             <option value="" selected="selected">Type</option>
@@ -49,7 +37,6 @@
                             {% endfor %}
                         </select>
                     </div>
-
                     <div class="col-md-1 form-group">
                         <button type="submit" class="btn btn-default btn-block">
                             Show
