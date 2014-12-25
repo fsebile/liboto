@@ -49,13 +49,13 @@ class Media(models.Model):
         ("n", "Newspaper"),
     ]
 
-    isbn = models.BigIntegerField()
+    isbn = models.CharField(max_length=13)
     title = models.CharField(max_length=160)
-    year = models.DateField()
+    year = models.CharField(max_length=4)
     publisher = models.ForeignKey(Publisher)
     author = models.ForeignKey(Author)
     cover_image = models.URLField(blank=True, null=True)
-    type = models.CharField(max_length=1, choices=MEDIA_CHOICES)
+    type = models.CharField(max_length=1, choices=MEDIA_CHOICES, default="b")
     total_stock = models.IntegerField(default=1)
 
     @property
@@ -80,18 +80,20 @@ class Transaction(models.Model):
 
     def clean(self):
         errors = {}
-        users_media = self.user.transaction_set.filter(returned=False)
+        if self.returned:
+            return
 
-        if (users_media.filter(media=self.media).exists()
-           and not self.returned):
+        if self.media in self.user.media_belonging:
             errors.update({'media': ["User hasn't returned this {}.".format(self.media.type_verbose)]})
 
-        if self.media.real_stock() < 1 and not self.returned:
+        if self.media.real_stock() < 1:
             errors.update({'media': ["This {} has no stock".format(self.type_verbose)]})
 
-        for media_transaction in users_media:
-            if media_transaction.is_past_due and not self.returned:
-                errors.update({'user': ["User has past due media."]})
+        if len(self.user.media_overdue):
+            errors.update({'user': ["User has past due media."]})
+
+        if self.user.real_book_limit < 1:
+            errors.update({'user': ["User has no media limit left"]})
 
         raise ValidationError(errors)
 

@@ -38,7 +38,7 @@ class MediaListView(ListView):
                            "publisher", "author", "type"],
             query_params={"isbn": "isbn__icontains",
                           "title": "title__icontains",
-                          "year": "year__year",
+                          "year": "year__icontains",
                           "publisher": "publisher__name__icontains",
                           "author": "author__name__icontains"})
         return self.model.objects.filter(**query)
