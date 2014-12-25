@@ -2,3 +2,4 @@ Django==1.7.1
 argparse==1.2.1
 django-bootstrap3==5.0.3
 wsgiref==0.1.2
+tablib==0.10.0

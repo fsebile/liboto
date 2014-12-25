@@ -3,8 +3,8 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError
 from django.views.generic.list import ListView
 from django.contrib import messages
-from django.views.generic.base import TemplateView
-from .models import Media, Author, Publisher, Transaction
+from django.views.generic.base import TemplateView, View
+from .models import Media, Transaction
 from django.utils import timezone
 
 # Create your views here.
@@ -15,7 +15,7 @@ class MediaListView(ListView):
     allow_empty = True
     http_method_names = [u'get']
     model = Media
-    paginate_by = 3  # 25
+    paginate_by = 10
 
     @staticmethod
     def get_search_parameters(request, search_params, query_params=None):
@@ -64,6 +64,44 @@ class UserMedia(TemplateView):
         context["transactions"] = self.request.user.transaction_set.order_by("returned", "cdate")
         context["now"] = timezone.now()
         return context
+
+
+class UserFavorites(TemplateView):
+    template_name = "main/user_favorites.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(UserFavorites, self).get_context_data(**kwargs)
+        context["favorites"] = self.request.user.favorite_medias.all()
+        return context
+
+
+class FavoriteMedia(View):
+    http_method_names = ["get", "post"]
+
+    def post(self, request, *args, **kwargs):
+        if {"media_id", "method"} <= set(request.POST.keys()):
+            media_q = Media.objects.filter(pk=request.POST["media_id"])
+            if media_q.exists():
+                if request.POST["method"] == "add":
+                    request.user.favorite_medias.add(media_q.first())
+                    messages.add_message(request, messages.INFO,
+                                         "Media added to your favorites.")
+                    return HttpResponseRedirect(redirect_to=reverse("media_list_url"))
+                elif request.POST["method"] == "remove":
+                    request.user.favorite_medias.remove(media_q.first())
+                    messages.add_message(request, messages.INFO,
+                                         "Media removed from your favorites.")
+                    return HttpResponseRedirect(redirect_to=reverse("user_favorites_url"))
+
+        messages.add_message(request, messages.WARNING,
+                             "An error occured, please inform us.")
+        return HttpResponseRedirect(redirect_to=reverse("media_list_url"))
+
+    def get(self, request, *args, **kwargs):  # get is forbidden
+        messages.add_message(request, messages.WARNING,
+                             "You've tried to access a forbidden page.")
+        return HttpResponseRedirect(redirect_to=reverse("home"))
+
 
 class RequestMedia(TemplateView):
     template_name = "main/request_media.html"

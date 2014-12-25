@@ -61,6 +61,9 @@
                     <li>
                         <a href="{% url "user_media_url" %}">My Loans</a>
                     </li>
+                    <li>
+                        <a href="{% url "user_favorites_url" %}">My Favorites</a>
+                    </li>
                 {% endif %}
             </ul>
         </div>
@@ -78,6 +81,11 @@
                     <div class="col-lg-12">
                         {% block content %}{% endblock %}
                     </div>
+                </div>
+                <div class="row">
+                    {% if page_obj %}
+                        {% bootstrap_pagination page_obj %}
+                    {% endif %}
                 </div>
             </div>
         </div>

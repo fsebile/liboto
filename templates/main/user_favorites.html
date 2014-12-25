@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block content %}
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h1>Your Favorites</h1>
+        </div>
+        <div class="panel-body">
+            <table class="table table-responsive">
+                <tr>
+                    <th>Thumbnail</th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Publisher</th>
+                    <th>Publish Year</th>
+                    <th>Status</th>
+                    <th>Remove</th>
+                </tr>
+                {% for media in favorites %}
+                    <tr>
+                        <td><img src="{{ media.cover_image }}" width="75px"/>
+                        </td>
+                        <td style="vertical-align:middle">{{ media.title }}</td>
+                        <td style="vertical-align:middle">{{ media.author.name }}</td>
+                        <td style="vertical-align:middle">{{ media.publisher.name }}</td>
+                        <td style="vertical-align:middle">{{ media.year|naturalday }}</td>
+                        <td style="vertical-align:middle">
+                            {% if media.real_stock > 0 %}
+                                <a href="{% url 'media_list_url' %}" class="btn btn-default">In Stock</a>
+                            {% else %}Out of Stock{% endif %}</td>
+                        <td style="vertical-align:middle">
+                            <form action="{% url "favorite_media_url" %}"
+                                  method="POST">{% csrf_token %}
+                                <input type="hidden" name="media_id"
+                                       value="{{ media.id }}">
+                                <input type="hidden" name="method"
+                                       value="remove">
+                                <button class="btn btn-warning btn-block"
+                                        type="submit">Remove
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+{% endblock content %}
