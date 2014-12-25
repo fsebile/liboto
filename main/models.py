@@ -3,9 +3,30 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from datetime import timedelta
+from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
 
+
+class User(AbstractUser):
+    book_limit = models.IntegerField(default=5)
+    favorite_medias = models.ManyToManyField("Media", blank=True, null=True)
+
+    @property
+    def real_book_limit(self):
+        return self.book_limit - self.transaction_set.filter(returned=False).count()
+
+    @property
+    def media_belonging(self):
+        return self.transaction_set.filter(returned=False)
+
+    @property
+    def media_overdue(self):
+        rlist = []
+        for media_transaction in self.transaction_set.filter(returned=False):
+            if media_transaction.is_past_due and not media_transaction.returned:
+                rlist.append(media_transaction)
+        return rlist
 
 class Author(models.Model):
     name = models.CharField(max_length=160)
