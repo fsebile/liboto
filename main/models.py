@@ -51,6 +51,7 @@ class Media(models.Model):
 
     isbn = models.CharField(max_length=13)
     title = models.CharField(max_length=160)
+    description = models.CharField(max_length=320, default="-")
     year = models.CharField(max_length=4)
     publisher = models.ForeignKey(Publisher)
     author = models.ForeignKey(Author)
