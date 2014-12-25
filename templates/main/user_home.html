@@ -5,6 +5,15 @@
             <h1>Your Home Page, {{ request.user }}</h1>
         </div>
         <div class="panel-body">
+            <div class="col-md-4">
+                <span style="font-weight: bold">Your Quota:</span> {{ request.user.real_book_limit }}/{{ request.user.book_limit }}
+            </div>
+            <div class="col-md-4">
+                <span style="font-weight: bold">Your Belonging:</span> {{ request.user.media_belonging|length }}
+            </div>
+            <div class="col-md-4">
+                <span style="font-weight: bold">Your Overdues:</span> {{ request.user.media_overdue|length }}
+            </div>
         </div>
     </div>
 {% endblock content %}
