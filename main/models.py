@@ -1,9 +1,11 @@
-from django.conf import settings
-from django.db import models
-from django.core.exceptions import ValidationError
-from django.utils import timezone
 from datetime import timedelta
+
+from django.db import models
+from django.conf import settings
+from django.utils import timezone
+from django.core.exceptions import ValidationError
 from django.contrib.auth.models import AbstractUser
+
 
 # Create your models here.
 
@@ -27,6 +29,7 @@ class User(AbstractUser):
             if media_transaction.is_past_due and not media_transaction.returned:
                 rlist.append(media_transaction)
         return rlist
+
 
 class Author(models.Model):
     name = models.CharField(max_length=160)

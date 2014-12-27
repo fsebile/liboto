@@ -4,11 +4,9 @@ from django.core.exceptions import ValidationError
 from django.views.generic.list import ListView
 from django.contrib import messages
 from django.views.generic.base import TemplateView, View
-from .models import Media, Transaction
 from django.utils import timezone
 
-# Create your views here.
-
+from .models import Media, Transaction
 
 
 class MediaListView(ListView):
