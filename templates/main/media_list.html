@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load humanize bootstrap3 %}
+{% load humanize bootstrap3 main_tags%}
 {% block content %}
 
     <div class="panel panel-info">
@@ -9,13 +9,17 @@
         <div class="panel-body">
             <form method="GET" action="." role="form">
                 <div class="row">
-                    <div class="col-md-2 form-group">
+                    <div class="col-md-1 form-group">
                         <input type="text" name="isbn" class="form-control"
                                id="isbn_id" placeholder="ISBN">
                     </div>
                     <div class="col-md-2 form-group">
                         <input type="text" name="title" class="form-control"
                                id="title_id" placeholder="Title">
+                    </div>
+                    <div class="col-md-2 form-group">
+                        <input type="text" name="description" class="form-control"
+                               id="description_id" placeholder="Description">
                     </div>
                     <div class="col-md-2 form-group">
                         <input type="text" name="author" class="form-control"
@@ -29,7 +33,7 @@
                         <input type="text" name="year" class="form-control"
                                id="year_id" placeholder="Year">
                     </div>
-                    <div class="col-md-2 form-group">
+                    <div class="col-md-1 form-group">
                         <select name="type" class="form-control" id="type_id">
                             <option value="" selected="selected">Type</option>
                             {% for mt, media_type in media_types %}
@@ -53,22 +57,43 @@
                     <th>Publisher</th>
                     <th>Publish Year</th>
                     <th>Status</th>
+                    <th>Details</th>
                     {% if not user.is_anonymous %}
                         <th>Request</th>
                         <th>Favorite</th>
                     {% endif %}
                 </tr>
-                {% for media in media_list %}
+                {% for media in sorted_media_list %}
                     <tr>
-                        <td><img src="{{ media.cover_image }}" width="75px"/>
-                        </td>
+                        <td><img src="{{ media.cover_image }}" width="75px"/></td>
+                    {% if tf_idfs|get:media.id == 0%}
                         <td style="vertical-align:middle">{{ media.title }}</td>
+                    {% else %}
+                        <td style="vertical-align:middle"><span data-toggle="tooltip" title="Proximity Score: {{ tf_idfs|get:media.id|stringformat:".0f" }}%"><span class="text-primary">&#9733;</span>{{ media.title }}</span></td>
+                    {% endif %}
                         <td style="vertical-align:middle">{{ media.author.name }}</td>
                         <td style="vertical-align:middle">{{ media.publisher.name }}</td>
                         <td style="vertical-align:middle">{{ media.year|naturalday }}</td>
                         <td style="vertical-align:middle">
-                            {% if media.real_stock > 0 %}In Stock{% else %}Out
-                                of Stock{% endif %}</td>
+                            {% if media.real_stock > 0 %}
+                                In Stock
+                            {% else %}
+                                Out of Stock
+                            {% endif %}
+                        </td>
+                        <td style="vertical-align:middle">
+                            <button
+                                    type="button"
+                                    class="btn btn-block btn-info"
+                                    data-toggle="popover"
+                                    data-trigger="focus"
+                                    data-placement="left"
+                                    title="ISBN: {{ media.isbn }}"
+                                    data-content="{{ media.description }}"
+                                    >
+                                Details
+                            </button>
+                        </td>
                         {% if not user.is_anonymous %}
                             <th style="vertical-align:middle">
                                 <form action="{% url "request_media_url" %}"
@@ -80,15 +105,16 @@
                                                 type="submit">Reserve
                                         </button>
                                     {% else %}
-                                        <button class="btn btn-default btn-block disabled"
-                                                type="button">Out of stock
+                                        <button class="btn btn-default btn-block"
+                                                type="button" data-toggle="tooltip" data-placement="top" title="Until {{ media.soonest_return|naturalday }}">Out of stock
                                         </button>
                                     {% endif %}
                                 </form>
                             </th>
                             <th style="vertical-align:middle">
                                 {% if media in request.user.favorite_medias.all %}
-                                    <a class="btn btn-default btn-block disabled">Favorited</a>
+                                    <button type="button" class="btn btn-default btn-block"
+                                            data-toggle="tooltip" data-placement="top" title="Already Favorited">Favorited</button>
                                 {% else %}
                                     <form action="{% url "favorite_media_url" %}"
                                           method="POST">{% csrf_token %}
@@ -96,7 +122,7 @@
                                                    value="{{ media.id }}">
                                             <input type="hidden" name="method"
                                                    value="add">
-                                            <button class="btn btn-info btn-block"
+                                            <button class="btn btn-warning btn-block"
                                                     type="submit">Favorite
                                             </button>
                                     </form>
@@ -110,3 +136,11 @@
         </div>
     </div>
 {% endblock %}
+{% block script %}
+    <script type="application/javascript">
+        $(function () {
+            $('[data-toggle="popover"]').popover();
+            $('[data-toggle="tooltip"]').tooltip();
+        })
+    </script>
+{% endblock script %}

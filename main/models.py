@@ -71,7 +71,37 @@ class Media(models.Model):
     real_stock.description = 'Real Stock'
     real_stock.allow_tags = True
 
-    def __unicode__(self):
+    @staticmethod
+    def tfidfs(keywords, queryset, normalize=False):
+        from .lib import tfidf
+        import re
+
+        if keywords is None:
+            return zip(queryset.values_list("id", flat=True), [0.0]*queryset.count())
+
+        word_finder = re.compile('\w+')
+
+        table = tfidf.tfidf()
+        for media in queryset:
+            table.addDocument(media.id, word_finder.findall(media.description.lower()))
+
+        scores = table.similarities(keywords.lower().split())
+
+        if normalize:
+            maximum_score = max(dict(scores).values())
+            minimum_score = min(dict(scores).values())
+            if minimum_score == maximum_score:
+                maximum_score = minimum_score + 0.001  # To prevent zero/zero division
+            scores = [(i[0], ((i[1]-minimum_score)/maximum_score-minimum_score)*100) for i in scores]
+
+        scores.sort(key=lambda x: x[1], reverse=True)
+        return scores
+
+    def soonest_return(self):
+        pass
+
+
+def __unicode__(self):
         return u"{}".format(self.title)
 
 

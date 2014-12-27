@@ -39,11 +39,21 @@ class MediaListView(ListView):
                           "year": "year__icontains",
                           "publisher": "publisher__name__icontains",
                           "author": "author__name__icontains"})
-        return self.model.objects.filter(**query)
+        queryset = self.model.objects.filter(**query)
+
+        description_keywords = self.request.GET.get("description", None)
+        self.tf_idfs = self.model.tfidfs(description_keywords, queryset, normalize=True)
+
+        sorted_queryset = self.model.objects.filter(pk__in=zip(*self.tf_idfs)[0])
+
+        return sorted_queryset
 
     def get_context_data(self, **kwargs):
         context = super(MediaListView, self).get_context_data(**kwargs)
         context["media_types"] = Media.MEDIA_CHOICES
+        media_list = sorted(list(self.object_list), key=lambda x: dict(self.tf_idfs)[x.id], reverse=True)
+        context["sorted_media_list"] = media_list
+        context["tf_idfs"] = dict(self.tf_idfs)
         return context
 
 
