@@ -85,7 +85,7 @@
                 </div>
                 <div class="row">
                     {% if page_obj %}
-                        {% bootstrap_pagination page_obj %}
+                        {% bootstrap_pagination page_obj extra=getvars %}
                     {% endif %}
                 </div>
             </div>

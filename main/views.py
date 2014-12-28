@@ -15,6 +15,17 @@ class MediaListView(ListView):
     model = Media
     paginate_by = 10
 
+    def get_paginator(self, queryset, per_page, orphans=0,
+                      allow_empty_first_page=True, **kwargs):
+        if queryset.count():
+            new_querylist = sorted(list(self.object_list), key=lambda x: dict(self.tf_idfs)[x.id], reverse=True)
+        else:
+            new_querylist = queryset
+
+        return super(MediaListView, self).get_paginator(new_querylist, per_page,
+                                                        orphans=orphans,
+                                                        allow_empty_first_page=allow_empty_first_page, **kwargs)
+
     @staticmethod
     def get_search_parameters(request, search_params, query_params=None):
         if query_params is None:
@@ -43,10 +54,7 @@ class MediaListView(ListView):
 
         description_keywords = self.request.GET.get("description", None)
         self.tf_idfs = self.model.tfidfs(description_keywords, queryset, normalize=True)
-
-        sorted_queryset = self.model.objects.filter(pk__in=zip(*self.tf_idfs)[0])
-
-        return sorted_queryset
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super(MediaListView, self).get_context_data(**kwargs)
@@ -54,6 +62,12 @@ class MediaListView(ListView):
         media_list = sorted(list(self.object_list), key=lambda x: dict(self.tf_idfs)[x.id], reverse=True)
         context["sorted_media_list"] = media_list
         context["tf_idfs"] = dict(self.tf_idfs)
+
+        variables = self.request.GET.copy()
+        if 'page' in variables:
+            del variables['page']
+        context["getvars"] = '&{0}'.format(variables.urlencode())
+
         return context
 
 

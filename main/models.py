@@ -76,7 +76,7 @@ class Media(models.Model):
         from .lib import tfidf
         import re
 
-        if keywords is None:
+        if keywords is None or queryset.count() < 1:
             return zip(queryset.values_list("id", flat=True), [0.0]*queryset.count())
 
         word_finder = re.compile('\w+')

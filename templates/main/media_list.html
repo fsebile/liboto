@@ -63,7 +63,7 @@
                         <th>Favorite</th>
                     {% endif %}
                 </tr>
-                {% for media in sorted_media_list %}
+                {% for media in object_list %}
                     <tr>
                         <td><img src="{{ media.cover_image }}" width="75px"/></td>
                     {% if tf_idfs|get:media.id == 0%}
