@@ -23,7 +23,7 @@
                         <td style="vertical-align:middle">{{ media.title }}</td>
                         <td style="vertical-align:middle">{{ media.author.name }}</td>
                         <td style="vertical-align:middle">{{ media.publisher.name }}</td>
-                        <td style="vertical-align:middle">{{ media.year|naturalday }}</td>
+                        <td style="vertical-align:middle">{{ media.year }}</td>
                         <td style="vertical-align:middle">
                             {% if media.real_stock > 0 %}
                                 <a href="{% url 'media_list_url' %}" class="btn btn-default">In Stock</a>

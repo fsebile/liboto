@@ -66,14 +66,14 @@
                 {% for media in object_list %}
                     <tr>
                         <td><img src="{{ media.cover_image }}" width="75px"/></td>
-                    {% if tf_idfs|get:media.id == 0%}
+                    {% if tf_idfs|get:media.id == 0 %}
                         <td style="vertical-align:middle">{{ media.title }}</td>
                     {% else %}
                         <td style="vertical-align:middle"><span data-toggle="tooltip" title="Proximity Score: {{ tf_idfs|get:media.id|stringformat:".0f" }}%"><span class="text-primary">&#9733;</span>{{ media.title }}</span></td>
                     {% endif %}
                         <td style="vertical-align:middle">{{ media.author.name }}</td>
                         <td style="vertical-align:middle">{{ media.publisher.name }}</td>
-                        <td style="vertical-align:middle">{{ media.year|naturalday }}</td>
+                        <td style="vertical-align:middle">{{ media.year }}</td>
                         <td style="vertical-align:middle">
                             {% if media.real_stock > 0 %}
                                 In Stock
@@ -135,7 +135,7 @@
             </table>
         </div>
     </div>
-{% endblock %}
+{% endblock content %}
 {% block script %}
     <script type="application/javascript">
         $(function () {

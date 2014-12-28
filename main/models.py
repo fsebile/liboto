@@ -98,11 +98,18 @@ class Media(models.Model):
         return scores
 
     def soonest_return(self):
-        pass
+        unreturned_transaction = list(self.transaction_set.filter(returned=False))
+        for order, transaction in enumerate(unreturned_transaction):
+            if transaction.is_past_due:
+                unreturned_transaction.pop(order)
 
+        if len(unreturned_transaction) < 0:
+            return timezone.now() + timedelta(days=1)
+        else:
+            return min(unreturned_transaction, key=lambda x: x.due_date).due_date
 
-def __unicode__(self):
-        return u"{}".format(self.title)
+    def __unicode__(self):
+            return u"{}".format(self.title)
 
 
 class Transaction(models.Model):
@@ -133,7 +140,7 @@ class Transaction(models.Model):
 
     @property
     def is_past_due(self):
-        return timezone.now() > self.cdate + timedelta(days=self.duration)
+        return timezone.now() > self.due_date
 
     @property
     def due_date(self):
