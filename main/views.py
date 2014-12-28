@@ -59,8 +59,6 @@ class MediaListView(ListView):
     def get_context_data(self, **kwargs):
         context = super(MediaListView, self).get_context_data(**kwargs)
         context["media_types"] = Media.MEDIA_CHOICES
-        media_list = sorted(list(self.object_list), key=lambda x: dict(self.tf_idfs)[x.id], reverse=True)
-        context["sorted_media_list"] = media_list
         context["tf_idfs"] = dict(self.tf_idfs)
 
         variables = self.request.GET.copy()
