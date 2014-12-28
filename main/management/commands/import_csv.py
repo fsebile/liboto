@@ -46,7 +46,8 @@ class Command(BaseCommand):
                     self.stdout.write("Publisher Exists: {}".format(p.name),
                                       ending='\n')
 
-                if not Media.objects.filter(isbn=row[hid("isbn")]).exists():
+                model_query = Media.objects.filter(isbn=row[hid("isbn")])
+                if not model_query.exists():
 
                     m = Media(
                         author=a,
@@ -63,6 +64,16 @@ class Command(BaseCommand):
                 else:
                     self.stdout.write("Media Exists: {}".format(
                         row[hid("title")]), ending='\n')
+                    m = model_query.first()
+                    changed = False
+                    for header in {'isbn', 'title', 'year', 'cover_image', 'description'}:
+                        if getattr(m, header) != row[hid(header)]:
+                            setattr(m, header, row[hid(header)])
+                            changed = True
+                    if changed:
+                        m.save()
+                        self.stdout.write("Media Changed: {}".format(
+                            row[hid("title")]), ending='\n')
 
         else:
             raise CommandError("Please specify a csv file to import!\n"
