@@ -73,6 +73,7 @@ class Media(models.Model):
 
     @staticmethod
     def tfidfs(keywords, queryset, normalize=False):
+        #It takes tf-idf and normalize this score
         from .lib import tfidf
         import re
 
